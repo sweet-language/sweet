@@ -1,0 +1,99 @@
+:root {
+  /* Clean Modern Theme */
+  --color-bg-base: #ffffff;
+  --color-bg-card: #ffffff;
+  /* No card bg by default */
+  --color-text-primary: #111111;
+  --color-text-secondary: #666666;
+  --color-text-muted: #999999;
+
+  --color-accent-gold: #D4AF37;
+  --color-accent-blue: #0066CC;
+  --color-accent-purple: #8A2BE2;
+
+  --font-heading: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-body: 'Georgia', serif;
+  /* Or system sans depending on preference, sticking to clean */
+}
+
+/* Dark Mode Overrides - minimal */
+[data-theme='dark'] {
+  --color-bg-base: #111111;
+  --color-bg-card: #111111;
+  --color-text-primary: #eeeeee;
+  --color-text-secondary: #aaaaaa;
+  --color-text-muted: #555555;
+  --color-accent-blue: #4da6ff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  background-color: var(--color-bg-base);
+  color: var(--color-text-primary);
+  line-height: 1.6;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  margin-top: 0;
+  letter-spacing: -0.02em;
+}
+
+/* Buttons */
+button {
+  font-family: var(--font-heading);
+}
+
+.btn-primary {
+  background: var(--color-text-primary);
+  color: var(--color-bg-base);
+  border: none;
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: opacity 0.2s;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
+
+/* Utilities */
+.scratch-text {
+  /* Using this class for main headings still, but keeping it clean */
+  font-family: var(--font-heading);
+}
+
+/* Removing the "card" look - making it invisible or just spacing */
+.scratch-card {
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+/* Form Inputs - Underlined style for "open" feel */
+input,
+textarea,
+select {
+  font-family: inherit;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-bottom-color: var(--color-text-primary);
+}
