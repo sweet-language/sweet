@@ -17,7 +17,7 @@ export const ClassCodeStep: React.FC<ClassCodeStepProps> = ({ onChange }) => {
 
     return (
         <div style={{ textAlign: 'center', animation: 'fadeIn 0.5s' }}>
-            <h2 className="scratch-text" style={{ fontSize: '2rem', marginBottom: '1rem' }}>
+            <h2 className="scratch-text" style={{ fontSize: '2rem', marginBottom: '1rem', color: '#9ECA3B' }}>
                 {t({ en: 'Enter Class Code', zh: '輸入班級代碼' })}
             </h2>
             <p style={{ color: 'var(--color-text-secondary)', marginBottom: '2rem' }}>
@@ -37,7 +37,7 @@ export const ClassCodeStep: React.FC<ClassCodeStepProps> = ({ onChange }) => {
                     width: '100%',
                     maxWidth: '300px',
                     borderRadius: '8px',
-                    border: '2px solid var(--color-accent-blue)',
+                    border: '2px solid #9ECA3B',
                     background: 'rgba(255,255,255,0.1)',
                     color: 'var(--color-text-primary)',
                     outline: 'none',

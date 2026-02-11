@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../language/LanguageContext';
 import { useAuth } from './AuthContext';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { LanguageToggle } from '../language/LanguageToggle';
 
 import puzzlePeopleImg from '../../assets/images/puzzle-people.png';
@@ -9,7 +9,7 @@ import studentSymbolImg from '../../assets/images/symbol-student-v5.png';
 import teacherSymbolImg from '../../assets/images/symbol-teacher-v5.png';
 
 export const LoginPage: React.FC = () => {
-    const { t, setLanguage, language } = useLanguage();
+    const { t, language } = useLanguage();
     const { login } = useAuth();
     const navigate = useNavigate();
 
@@ -20,18 +20,13 @@ export const LoginPage: React.FC = () => {
     const [error, setError] = useState('');
 
     // Auto-switch language based on selected role for the Login Form
+    // Auto-switch language based on selected role for the Login Form - REMOVED for Global State
     useEffect(() => {
         // Clear form when switching roles
         setUsername('');
         setPassword('');
         setError('');
-
-        if (selectedRole === 'student') {
-            setLanguage('zh-TW');
-        } else if (selectedRole === 'teacher') {
-            setLanguage('en');
-        }
-    }, [selectedRole, setLanguage]);
+    }, [selectedRole]);
 
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
@@ -42,11 +37,8 @@ export const LoginPage: React.FC = () => {
 
             if (result.success) {
                 // Auto-switch language based on role
-                if (selectedRole === 'student') {
-                    setLanguage('zh-TW');
-                } else if (selectedRole === 'teacher') {
-                    setLanguage('en');
-                }
+                // Auto-switch language based on role - REMOVED for Global State
+
                 navigate('/dashboard');
             } else {
                 setError(result.error || 'Login failed');
@@ -232,37 +224,7 @@ export const LoginPage: React.FC = () => {
                     position: 'relative' // Added for absolute positioning of logo
                 }}>
 
-                    {/* Top Left Logo */}
-                    <Link to="/" style={{ position: 'absolute', top: '2rem', left: '2rem', textDecoration: 'none' }}>
-                        <svg width="140" height="60" viewBox="0 0 500 200" style={{ overflow: 'visible' }}>
-                            <defs>
-                                <path id="curveSweetLogin" d="M 50,120 Q 250,20 450,120" />
-                            </defs>
 
-                            <g stroke="#000000" fill="none" strokeLinecap="round" opacity="1" transform="rotate(-15, 115, 75)">
-                                <path d="M 55,80 Q 95,60 130,53" strokeWidth="2" strokeDasharray="1 8 4 6 2 5" strokeLinecap="round" />
-                                <path d="M 25,105 Q 75,75 127,65" strokeWidth="4" />
-                                <path d="M 75,95 Q 100,85 125,77" strokeWidth="3" strokeDasharray="0.5 10 2 8" strokeLinecap="round" />
-                                <path d="M 45,120 Q 85,100 123,89" strokeWidth="2" />
-                            </g>
-
-                            <text>
-                                <textPath
-                                    href="#curveSweetLogin"
-                                    startOffset="50%"
-                                    textAnchor="middle"
-                                    style={{
-                                        fontSize: '5rem',
-                                        fontWeight: '900',
-                                        fill: '#000000',
-                                        fontFamily: 'sans-serif'
-                                    }}
-                                >
-                                    {t({ en: 'sweet!', zh: 'sweet!' })}
-                                </textPath>
-                            </text>
-                        </svg>
-                    </Link>
 
                     {/* Scattered Stars (Black & White) */}
                     {[
@@ -448,35 +410,7 @@ export const LoginPage: React.FC = () => {
                             }}
                         />
                     ))}
-                    {/* Top Left Logo (About Section) */}
-                    <div style={{ position: 'absolute', top: '2rem', left: '2rem', zIndex: 10 }}>
-                        <svg width="140" height="60" viewBox="0 0 500 200" style={{ overflow: 'visible' }}>
-                            <defs>
-                                <path id="curveSweetAbout" d="M 50,120 Q 250,20 450,120" />
-                            </defs>
-                            <g stroke="#1a1918" fill="none" strokeLinecap="round" opacity="1" transform="rotate(-15, 115, 75)">
-                                <path d="M 55,80 Q 95,60 130,53" strokeWidth="2" strokeDasharray="1 8 4 6 2 5" strokeLinecap="round" />
-                                <path d="M 25,105 Q 75,75 127,65" strokeWidth="4" />
-                                <path d="M 75,95 Q 100,85 125,77" strokeWidth="3" strokeDasharray="0.5 10 2 8" strokeLinecap="round" />
-                                <path d="M 45,120 Q 85,100 123,89" strokeWidth="2" />
-                            </g>
-                            <text>
-                                <textPath
-                                    href="#curveSweetAbout"
-                                    startOffset="50%"
-                                    textAnchor="middle"
-                                    style={{
-                                        fontSize: '5rem',
-                                        fontWeight: '900',
-                                        fill: '#1a1918',
-                                        fontFamily: 'sans-serif'
-                                    }}
-                                >
-                                    {t({ en: 'sweet!', zh: 'sweet!' })}
-                                </textPath>
-                            </text>
-                        </svg>
-                    </div>
+
 
                     {/* Language Toggle - Top Right */}
                     <div style={{ position: 'absolute', top: '2rem', right: '2rem' }}>
@@ -556,7 +490,9 @@ export const LoginPage: React.FC = () => {
                                 We are a group of <span style={{ backgroundColor: '#666666', color: '#f9f9f9', padding: '0 0.4rem' }}>passionate</span> humans <span style={{ backgroundColor: '#666666', color: '#f9f9f9', padding: '0 0.4rem' }}>curious</span> about <span style={{ backgroundColor: '#666666', color: '#f9f9f9', padding: '0 0.4rem' }}>language</span>, <span style={{ backgroundColor: '#ebebeb', color: '#4a4a4a', padding: '0.5rem 1.2rem' }}>learning</span>, <span style={{ backgroundColor: '#9ECA3B', color: '#f9f9f9', padding: '0 0.4rem' }}>the mind</span> and <span style={{ backgroundColor: '#e0e0e0', color: '#000000', padding: '0 0.4rem' }}>the world</span> around us.
                             </>
                         ) : (
-                            '我們是一群對語言、學習、心靈和周遭世界充滿好奇的熱情人類。'
+                            <>
+                                我們是一群<span style={{ backgroundColor: '#666666', color: '#f9f9f9', padding: '0 0.4rem' }}>充滿熱情</span>對<span style={{ backgroundColor: '#666666', color: '#f9f9f9', padding: '0 0.4rem' }}>語言</span>、<span style={{ backgroundColor: '#ebebeb', color: '#4a4a4a', padding: '0.5rem 1.2rem' }}>學習</span>、<span style={{ backgroundColor: '#9ECA3B', color: '#f9f9f9', padding: '0 0.4rem' }}>心靈</span>和<span style={{ backgroundColor: '#e0e0e0', color: '#000000', padding: '0 0.4rem' }}>周遭世界</span>充滿<span style={{ backgroundColor: '#666666', color: '#f9f9f9', padding: '0 0.4rem' }}>好奇</span>的人類。
+                            </>
                         )}
                     </p>
 
@@ -638,12 +574,7 @@ export const LoginPage: React.FC = () => {
             <div style={{ position: 'absolute', top: '2rem', right: '2rem' }}>
                 <LanguageToggle />
             </div>
-            <button
-                onClick={() => setSelectedRole(null)}
-                style={{ background: 'transparent', border: 'none', color: 'var(--color-text-secondary)', marginBottom: '2rem', cursor: 'pointer', fontSize: '0.9rem' }}
-            >
-                ← {t({ en: 'Back', zh: '返回' })}
-            </button>
+
 
             <form
                 key={selectedRole} // BRAND NEW FORM DOM
@@ -655,7 +586,7 @@ export const LoginPage: React.FC = () => {
                 <input type="text" name="fakeusernameremembered" style={{ display: 'none' }} />
                 <input type="password" name="fakepasswordremembered" style={{ display: 'none' }} />
 
-                <h2 style={{ textAlign: 'center', marginBottom: '1rem', color: 'var(--color-accent-blue)' }}>
+                <h2 style={{ textAlign: 'center', marginBottom: '1rem', color: '#1a1918', fontSize: '2rem' }}>
                     {selectedRole === 'teacher'
                         ? t({ en: 'Teacher Login', zh: '教師登入' })
                         : t({ en: 'Student Login', zh: '學生登入' })}
@@ -714,7 +645,7 @@ export const LoginPage: React.FC = () => {
                 </div>
 
                 {error && (
-                    <div style={{ color: '#ff4d4d', fontSize: '0.9rem', textAlign: 'center' }}>
+                    <div style={{ color: '#666666', fontSize: '0.9rem', textAlign: 'center' }}>
                         {error}
                     </div>
                 )}
@@ -724,19 +655,51 @@ export const LoginPage: React.FC = () => {
                 </button>
 
                 <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
-
-                    <Link
-                        to={selectedRole === 'student' ? '/signup?mode=onboarding' : '/signup?mode=teacher'}
+                    <button
+                        onClick={() => navigate(selectedRole === 'student' ? '/signup?mode=onboarding' : '/signup?mode=teacher')}
                         style={{
-                            color: 'var(--color-accent-blue)',
+                            background: '#1a1918',
+                            color: '#f9f9f9',
+                            border: 'none',
+                            padding: '0.75rem 2rem',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                            fontSize: '1rem',
                             fontWeight: 'bold',
-                            textDecoration: 'none'
+                            fontFamily: 'var(--font-heading)'
                         }}
                     >
-                        {t({ en: 'Create an account', zh: '建立帳號' })}
-                    </Link>
+                        {t({ en: 'Create an Account', zh: '建立帳號' })}
+                    </button>
                 </div>
             </form>
+
+            <button
+                onClick={() => setSelectedRole(null)}
+                style={{
+                    position: 'absolute',
+                    bottom: '2rem',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    background: 'transparent',
+                    border: 'none',
+                    color: '#999',
+                    cursor: 'pointer',
+                }}
+                onMouseEnter={(e) => {
+                    const arrow = e.currentTarget.querySelector('.hover-arrow') as HTMLElement;
+                    if (arrow) arrow.style.transform = 'translateX(-8px)';
+                }}
+                onMouseLeave={(e) => {
+                    const arrow = e.currentTarget.querySelector('.hover-arrow') as HTMLElement;
+                    if (arrow) arrow.style.transform = 'translateX(0)';
+                }}
+            >
+                <span style={{ position: 'absolute', right: '100%', top: '0', bottom: '0', display: 'flex', alignItems: 'center', paddingRight: '0.5rem' }}>
+                    <span className="hover-arrow" style={{ display: 'inline-block', transition: 'transform 0.3s ease' }}>←</span>
+                </span>
+                {t({ en: 'Previous Page', zh: '上一頁' })}
+            </button>
         </div>
     );
 };

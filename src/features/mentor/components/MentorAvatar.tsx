@@ -15,12 +15,12 @@ export const MentorAvatar: React.FC<MentorAvatarProps> = ({ onClick, isOpen }) =
                 height: '60px',
                 borderRadius: '50%',
                 background: 'var(--color-bg-card)',
-                border: '2px solid var(--color-accent-gold)',
+                border: '2px solid #9ECA3B',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: 'pointer',
-                boxShadow: isOpen ? '0 0 20px var(--color-accent-gold)' : '0 4px 10px rgba(0,0,0,0.5)',
+                boxShadow: isOpen ? '0 0 20px #9ECA3B' : '0 4px 10px rgba(0,0,0,0.5)',
                 transition: 'all 0.3s ease',
                 position: 'relative',
                 zIndex: 1001
@@ -40,7 +40,7 @@ export const MentorAvatar: React.FC<MentorAvatarProps> = ({ onClick, isOpen }) =
                 width: '12px',
                 height: '12px',
                 borderRadius: '50%',
-                background: 'var(--color-accent-blue)',
+                background: '#9ECA3B',
                 border: '2px solid var(--color-bg-base)'
             }}></div>
         </button>

@@ -41,7 +41,7 @@ export const Header: React.FC<HeaderProps> = ({ showLogout = true }) => {
                     </defs>
 
                     {/* Speed Lines - Adapted to Current Color */}
-                    <g stroke="var(--color-text-primary)" fill="none" strokeLinecap="round" opacity="1" transform="rotate(-15, 115, 75)">
+                    <g stroke="#9ECA3B" fill="none" strokeLinecap="round" opacity="1" transform="rotate(-15, 115, 75)">
                         <path d="M 55,80 Q 95,60 130,53" strokeWidth="2" strokeDasharray="1 8 4 6 2 5" strokeLinecap="round" />
                         <path d="M 25,105 Q 75,75 127,65" strokeWidth="4" />
                         <path d="M 75,95 Q 100,85 125,77" strokeWidth="3" strokeDasharray="0.5 10 2 8" strokeLinecap="round" />
@@ -56,7 +56,7 @@ export const Header: React.FC<HeaderProps> = ({ showLogout = true }) => {
                             style={{
                                 fontSize: '5rem',
                                 fontWeight: '900',
-                                fill: 'var(--color-text-primary)',
+                                fill: '#9ECA3B',
                                 fontFamily: 'var(--font-heading, sans-serif)'
                             }}
                         >
@@ -71,7 +71,7 @@ export const Header: React.FC<HeaderProps> = ({ showLogout = true }) => {
                 {user && (
                     <span style={{ marginRight: '1rem', color: 'var(--color-text-secondary)', fontSize: '0.9rem' }}>
                         {t({ en: 'Hello, ', zh: '你好，' })}
-                        <strong style={{ color: 'var(--color-accent-blue)' }}>
+                        <strong style={{ color: '#9ECA3B' }}>
                             {user.id}
                         </strong>
                     </span>

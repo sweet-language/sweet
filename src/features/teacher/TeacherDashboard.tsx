@@ -222,8 +222,8 @@ export const TeacherDashboard: React.FC = () => {
                     className="btn-primary"
                     style={{
                         background: 'var(--color-bg-card)',
-                        border: '1px solid var(--color-accent-blue)',
-                        color: 'var(--color-accent-blue)',
+                        border: '1px solid var(--color-text-primary)',
+                        color: 'var(--color-text-primary)',
                         fontSize: '0.9rem',
                         padding: '0.5rem 1rem'
                     }}
@@ -236,7 +236,7 @@ export const TeacherDashboard: React.FC = () => {
 
             {/* Header Section */}
             <header style={{ marginBottom: '3rem', textAlign: 'center' }}>
-                <h2 style={{ fontSize: '2.5rem', marginBottom: '0.5rem', color: 'var(--color-accent-blue)' }}>
+                <h2 style={{ fontSize: '2.5rem', marginBottom: '0.5rem', color: '#9ECA3B' }}>
                     {t({ en: 'Design Your Lesson', zh: '設計您的課程' })}
                 </h2>
                 <p style={{ color: 'var(--color-text-secondary)', fontSize: '1.2rem' }}>
@@ -265,11 +265,11 @@ export const TeacherDashboard: React.FC = () => {
                             border: 'none',
                             padding: '1rem',
                             opacity: activeTool === tool.id ? 1 : 0.5,
-                            borderBottom: activeTool === tool.id ? '2px solid var(--color-accent-gold)' : '2px solid transparent',
+                            borderBottom: activeTool === tool.id ? '2px solid #9ECA3B' : '2px solid transparent',
                             transition: 'all 0.3s'
                         }}
                     >
-                        <tool.icon size={32} color={activeTool === tool.id ? 'var(--color-accent-gold)' : 'var(--color-text-secondary)'} />
+                        <tool.icon size={32} color={activeTool === tool.id ? '#9ECA3B' : 'var(--color-text-secondary)'} />
                         <span style={{ fontSize: '0.9rem', color: 'var(--color-text-primary)' }}>{tool.label}</span>
                     </button>
                 ))}
@@ -390,10 +390,10 @@ export const TeacherDashboard: React.FC = () => {
                                         background: 'var(--color-bg-card)',
                                         padding: '2rem',
                                         borderRadius: '12px',
-                                        border: '1px solid var(--color-accent-gold)',
+                                        border: '1px solid #9ECA3B',
                                         marginTop: '2rem'
                                     }}>
-                                        <h3 style={{ color: 'var(--color-accent-gold)', marginBottom: '1rem' }}>{generatedContent.title}</h3>
+                                        <h3 style={{ color: '#9ECA3B', marginBottom: '1rem' }}>{generatedContent.title}</h3>
                                         <p style={{ whiteSpace: 'pre-wrap', lineHeight: '1.8', marginBottom: '1.5rem' }}>{generatedContent.content}</p>
 
                                         {generatedContent.vocab && (
@@ -611,7 +611,7 @@ export const TeacherDashboard: React.FC = () => {
                         <div style={{ marginBottom: '2rem' }}>
                             {getContentObject() ? (
                                 <>
-                                    <h3 style={{ color: 'var(--color-accent-gold)', marginBottom: '0.5rem' }}>{getContentObject()?.title}</h3>
+                                    <h3 style={{ color: '#9ECA3B', marginBottom: '0.5rem' }}>{getContentObject()?.title}</h3>
                                     <div style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6', color: 'var(--color-text-primary)' }}>
                                         {getContentObject()?.content}
                                     </div>

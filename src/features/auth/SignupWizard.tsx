@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth, type User } from './AuthContext';
 import { useLanguage } from '../../features/language/LanguageContext';
@@ -11,11 +11,12 @@ import { ClassCodeStep } from '../../features/onboarding/steps/ClassCodeStep';
 
 import { AccountCreationStep } from '../../features/onboarding/steps/AccountCreationStep';
 import { AgeSelectionStep } from '../../features/onboarding/steps/AgeSelectionStep';
+import classroomSketch from '../../assets/images/classroom_sketch.png';
 
 export const SignupWizard: React.FC = () => {
     const [searchParams] = useSearchParams();
     const mode = searchParams.get('mode') || 'test';
-    const { setLanguage, t } = useLanguage();
+    const { t } = useLanguage();
     const { signup, getAllTeachers } = useAuth();
     const navigate = useNavigate();
 
@@ -34,13 +35,8 @@ export const SignupWizard: React.FC = () => {
     // Teacher selection
     const allTeachers = getAllTeachers();
 
-    useEffect(() => {
-        if (mode === 'teacher') {
-            setLanguage('en');
-        } else {
-            setLanguage('en'); // Default UI to English for now
-        }
-    }, [mode, setLanguage]);
+    // Language is now managed by LanguageContext and persists from landing page
+
 
     const handleSignup = (credentials: { username: string, password?: string }) => {
         // Final Validation
@@ -66,25 +62,60 @@ export const SignupWizard: React.FC = () => {
     };
 
     // --- Render Logic ---
+    const arrowStyle = {
+        display: 'inline-block',
+        transition: 'transform 0.2s',
+        animation: 'pointLeft 1.5s infinite ease-in-out'
+    };
+
+    const animStyles = (
+        <style>{`
+            @keyframes pointLeft {
+                0%, 100% { transform: translateX(0); }
+                50% { transform: translateX(-4px); }
+            }
+        `}</style>
+    );
 
     // 1. Language Selection
     if (step === 1) {
         return (
             <div className="wizard-step" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#1a1918' }}>
-                <div style={{ position: 'absolute', top: '1rem', right: '1rem', filter: 'invert(1)' }}>
-                    <LanguageToggle />
+                <div style={{ position: 'absolute', top: '1rem', right: '1rem', zIndex: 10 }}>
+                    <LanguageToggle variant="dark" />
                 </div>
-                <h2 className="scratch-text" style={{ fontSize: '2.5rem', color: '#f0f0f0', marginBottom: '2rem' }}>
-                    {mode === 'teacher' ? t({ en: 'What do you teach?', zh: '您教什麼？' }) : t({ en: 'What are you studying?', zh: '您想學什麼？' })}
-                </h2>
-                <div style={{ display: 'flex', gap: '2rem' }}>
-                    <button onClick={() => { setTargetLanguage('zh'); setStep(2); }} style={{ padding: '2rem', borderRadius: '16px', border: 'none', cursor: 'pointer', fontSize: '1.5rem', minWidth: '200px' }}>
-                        {t({ en: 'Chinese', zh: '中文' })}
-                    </button>
-                    <button onClick={() => { setTargetLanguage('en'); setStep(2); }} style={{ padding: '2rem', borderRadius: '16px', border: 'none', cursor: 'pointer', fontSize: '1.5rem', minWidth: '200px' }}>
-                        {t({ en: 'English', zh: '英文' })}
-                    </button>
+                <div style={{ marginTop: '-3rem' }}>
+                    <h2 className="scratch-text" style={{ fontSize: '2.5rem', color: '#9ECA3B', marginBottom: '2rem', textAlign: 'center' }}>
+                        {mode === 'teacher' ? t({ en: 'What do you teach?', zh: '您教什麼？' }) : t({ en: 'What are you studying?', zh: '您想學什麼？' })}
+                    </h2>
+                    <div style={{ display: 'flex', gap: '2rem' }}>
+                        <button onClick={() => { setTargetLanguage('zh'); setStep(2); }} style={{ padding: '2rem', borderRadius: '16px', border: 'none', cursor: 'pointer', fontSize: '1.5rem', minWidth: '200px' }}>
+                            {t({ en: 'Chinese', zh: '中文' })}
+                        </button>
+                        <button onClick={() => { setTargetLanguage('en'); setStep(2); }} style={{ padding: '2rem', borderRadius: '16px', border: 'none', cursor: 'pointer', fontSize: '1.5rem', minWidth: '200px' }}>
+                            {t({ en: 'English', zh: '英文' })}
+                        </button>
+                    </div>
                 </div>
+                <button
+                    onClick={() => navigate('/')}
+                    style={{
+                        position: 'absolute',
+                        bottom: '2rem',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        background: 'transparent',
+                        border: 'none',
+                        color: '#666',
+                        cursor: 'pointer',
+                    }}
+                >
+                    <span style={{ position: 'absolute', right: '100%', top: '0', bottom: '0', display: 'flex', alignItems: 'center', paddingRight: '0.5rem' }}>
+                        <span style={arrowStyle}>←</span>
+                    </span>
+                    {t({ en: 'Previous Page', zh: '上一頁' })}
+                </button>
+                {animStyles}
             </div>
         );
     }
@@ -101,6 +132,14 @@ export const SignupWizard: React.FC = () => {
                         setStep(4); // Skip to Assessment/Code
                     }
                 }} />
+                <div style={{ textAlign: 'center', marginTop: '4rem' }}>
+                    <button onClick={() => setStep(1)} style={{ background: 'none', border: 'none', color: '#999', cursor: 'pointer', position: 'relative', margin: '0 auto' }}>
+                        <span style={{ position: 'absolute', right: '100%', top: '0', bottom: '0', display: 'flex', alignItems: 'center', paddingRight: '0.5rem' }}>
+                            <span style={arrowStyle}>←</span>
+                        </span>
+                        {t({ en: 'Previous Page', zh: '上一頁' })}
+                    </button>
+                </div>
             </div>
         );
     }
@@ -113,6 +152,14 @@ export const SignupWizard: React.FC = () => {
                     setAge(a);
                     setStep(4);
                 }} />
+                <div style={{ textAlign: 'center', marginTop: '4rem' }}>
+                    <button onClick={() => setStep(2)} style={{ background: 'none', border: 'none', color: '#999', cursor: 'pointer', position: 'relative', margin: '0 auto' }}>
+                        <span style={{ position: 'absolute', right: '100%', top: '0', bottom: '0', display: 'flex', alignItems: 'center', paddingRight: '0.5rem' }}>
+                            <span style={arrowStyle}>←</span>
+                        </span>
+                        {t({ en: 'Previous Page', zh: '上一頁' })}
+                    </button>
+                </div>
             </div>
         );
     }
@@ -130,6 +177,21 @@ export const SignupWizard: React.FC = () => {
                             setStep(5); // Go to Teacher Match
                         }}
                     />
+                    <div style={{ textAlign: 'center', marginTop: '4rem' }}>
+                        <button
+                            onClick={() => {
+                                // Logic to retrace: if we did age step (start=en & path=test), go back to 3. else 2.
+                                if (path === 'test' && targetLanguage === 'en') setStep(3);
+                                else setStep(2);
+                            }}
+                            style={{ background: 'none', border: 'none', color: '#999', cursor: 'pointer', position: 'relative', margin: '0 auto' }}
+                        >
+                            <span style={{ position: 'absolute', right: '100%', top: '0', bottom: '0', display: 'flex', alignItems: 'center', paddingRight: '0.5rem' }}>
+                                <span style={arrowStyle}>←</span>
+                            </span>
+                            {t({ en: 'Previous Page', zh: '上一頁' })}
+                        </button>
+                    </div>
                 </div>
             );
         } else {
@@ -141,9 +203,50 @@ export const SignupWizard: React.FC = () => {
                         // For now classCodeStep inputs value. We might need a "Next" button in ClassCodeStep or here.
                         // Let's assume ClassCodeStep is just input. We need a next button.
                     }} />
-                    <button className="btn-primary" onClick={() => setStep(5)} disabled={classCode.length < 3} style={{ display: 'block', margin: '2rem auto' }}>
+                    <button
+                        className="btn-primary"
+                        onClick={() => setStep(5)}
+                        disabled={classCode.length < 3}
+                        style={{
+                            display: 'block',
+                            margin: '2.5rem auto 1rem auto',
+                            transition: 'background-color 0.3s ease, border-color 0.3s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                            if (classCode.length >= 3) {
+                                e.currentTarget.style.backgroundColor = '#9ECA3B';
+                                e.currentTarget.style.borderColor = '#9ECA3B';
+                            }
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = '';
+                            e.currentTarget.style.borderColor = '';
+                        }}
+                    >
                         Next
                     </button>
+                    <div style={{ textAlign: 'center', marginTop: '4rem' }}>
+                        <div style={{ marginTop: '-2.5rem' }}>
+                            <img src={classroomSketch} alt="Classroom" style={{ maxWidth: '300px', width: '100%', opacity: 0.9, mixBlendMode: 'screen' }} />
+                        </div>
+                        <button
+                            onClick={() => setStep(2)}
+                            style={{ background: 'none', border: 'none', color: '#999', cursor: 'pointer', position: 'relative', margin: '2rem auto 0 auto' }}
+                            onMouseEnter={(e) => {
+                                const arrow = e.currentTarget.querySelector('.hover-arrow') as HTMLElement;
+                                if (arrow) arrow.style.transform = 'translateX(-8px)';
+                            }}
+                            onMouseLeave={(e) => {
+                                const arrow = e.currentTarget.querySelector('.hover-arrow') as HTMLElement;
+                                if (arrow) arrow.style.transform = 'translateX(0)';
+                            }}
+                        >
+                            <span style={{ position: 'absolute', right: '100%', top: '0', bottom: '0', display: 'flex', alignItems: 'center', paddingRight: '0.5rem' }}>
+                                <span className="hover-arrow" style={{ ...arrowStyle, transition: 'transform 0.3s ease' }}>←</span>
+                            </span>
+                            {t({ en: 'Previous Page', zh: '上一頁' })}
+                        </button>
+                    </div>
                 </div>
             );
         }
@@ -182,6 +285,18 @@ export const SignupWizard: React.FC = () => {
                 {allTeachers.length > 0 && !selectedTeacherId && (
                     <div style={{ marginTop: '1rem', color: '#999', fontSize: '0.9rem' }}>Please select a teacher to continue.</div>
                 )}
+
+                <div style={{ textAlign: 'center', marginTop: '4rem' }}>
+                    <button
+                        onClick={() => setStep(4)}
+                        style={{ background: 'none', border: 'none', color: '#999', cursor: 'pointer', position: 'relative', margin: '0 auto' }}
+                    >
+                        <span style={{ position: 'absolute', right: '100%', top: '0', bottom: '0', display: 'flex', alignItems: 'center', paddingRight: '0.5rem' }}>
+                            <span style={arrowStyle}>←</span>
+                        </span>
+                        {t({ en: 'Previous Page', zh: '上一頁' })}
+                    </button>
+                </div>
             </div>
         );
     }
@@ -195,6 +310,17 @@ export const SignupWizard: React.FC = () => {
                     <LanguageToggle />
                 </div>
                 <AccountCreationWrapper onSignup={handleSignup} mode={mode} />
+                <div style={{ textAlign: 'center', marginTop: '4rem' }}>
+                    <button
+                        onClick={() => setStep(5)}
+                        style={{ background: 'none', border: 'none', color: '#999', cursor: 'pointer', position: 'relative', margin: '0 auto' }}
+                    >
+                        <span style={{ position: 'absolute', right: '100%', top: '0', bottom: '0', display: 'flex', alignItems: 'center', paddingRight: '0.5rem' }}>
+                            <span style={arrowStyle}>←</span>
+                        </span>
+                        {t({ en: 'Previous Page', zh: '上一頁' })}
+                    </button>
+                </div>
             </div>
         );
     }

@@ -21,8 +21,18 @@ const converterTWToCN = OpenCC.Converter({ from: 'tw', to: 'cn' });
 const converterCNToTW = OpenCC.Converter({ from: 'cn', to: 'tw' });
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [language, setLanguage] = useState<Language>('en');
+    // Initialize from localStorage or default to 'en'
+    const [language, setLanguageState] = useState<Language>(() => {
+        const saved = localStorage.getItem('app-language');
+        return (saved as Language) || 'en';
+    });
+
     const [userLevel, setUserLevel] = useState<string>('Beginner'); // 'Beginner' or 'Advanced'
+
+    const setLanguage = (lang: Language) => {
+        setLanguageState(lang);
+        localStorage.setItem('app-language', lang);
+    };
 
     // Simple label translator
     const t = (labels: { en: string; zh: string }) => {

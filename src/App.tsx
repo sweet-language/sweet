@@ -53,7 +53,7 @@ function MainApp() {
       {/* Header only for logged in users */}
       {user && <Header showLogout={true} />}
 
-      <div style={{ paddingTop: '1rem' }}>
+      <div>
         <Routes>
           {/* Public Routes */}
           {!user && (
@@ -91,7 +91,7 @@ function MainApp() {
         </Routes>
       </div>
 
-      {user?.role === 'student' && <MentorOverlay />}
+      {(user?.role === 'student' || user?.role === 'teacher') && <MentorOverlay />}
     </>
   );
 }
