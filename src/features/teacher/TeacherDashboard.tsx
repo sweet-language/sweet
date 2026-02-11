@@ -2,8 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../language/LanguageContext';
 import { useAuth } from '../auth/AuthContext';
 import { contentService } from '../../services/contentService';
-import { aiService, type GeneratedStory } from '../../services/aiService'; // Import AI Service
-import { LucideBookOpen, LucideImage, LucideWholeWord, LucideLanguages, LucideSend } from 'lucide-react';
+import { aiService, type GeneratedStory } from '../../services/aiService';
+import { lessonPlanService } from '../../services/lessonPlanService';
+import { LessonPlanReview } from './components/LessonPlanReview';
+import type { LessonPlan } from '../../models/lessonPlan';
+import type { LevelNumber, Framework } from '../../models/leveling';
+import { GEPT_LEVELS, TOCFL_LEVELS, GRADE_LEVELS } from '../../models/leveling';
+import { LucideBookOpen, LucideImage, LucideWholeWord, LucideLanguages, LucideSend, LucideClipboardCheck } from 'lucide-react';
 
 export const TeacherDashboard: React.FC = () => {
     const { t, language } = useLanguage();
@@ -18,6 +23,34 @@ export const TeacherDashboard: React.FC = () => {
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [generatedContent, setGeneratedContent] = useState<GeneratedStory | null>(null);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+    // Lesson Plan State
+    const [lessonPlans, setLessonPlans] = useState<LessonPlan[]>([]);
+    const [activePlan, setActivePlan] = useState<LessonPlan | null>(null);
+    const [showReview, setShowReview] = useState(false);
+    const [targetLevel, setTargetLevel] = useState<LevelNumber>(3);
+    const [targetFramework, setTargetFramework] = useState<Framework>('GEPT');
+
+    // Load lesson plans
+    useEffect(() => {
+        if (user) {
+            setLessonPlans(lessonPlanService.getByTeacher(user.id));
+        }
+    }, [user]);
+
+    const refreshPlans = () => {
+        if (user) {
+            setLessonPlans(lessonPlanService.getByTeacher(user.id));
+        }
+    };
+
+    const getLevelOptions = () => {
+        const table = targetFramework === 'GEPT' ? GEPT_LEVELS : targetFramework === 'TOCFL' ? TOCFL_LEVELS : GRADE_LEVELS;
+        return Object.entries(table).map(([num, detail]) => ({
+            value: Number(num) as LevelNumber,
+            label: detail.label,
+        }));
+    };
 
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -207,8 +240,79 @@ export const TeacherDashboard: React.FC = () => {
         setGeneratedContent(null);
         setVocabList('');
         setGrammarTopic('');
-        // setSelectedStudentIds([]); // Keep selected students for potential re-use
         setImagePreview(null);
+    };
+
+    // ── Lesson Plan Flow ─────────────────────────────────────────────
+    const handleCreateDraft = async () => {
+        if (!user) return;
+
+        const sourceType = activeTool === 'photo' ? 'image' as const
+            : activeTool === 'vocab' ? 'vocab-list' as const
+            : activeTool === 'grammar' ? 'grammar-topic' as const
+            : 'manual' as const;
+
+        const sourceData = activeTool === 'photo' ? (imagePreview || '')
+            : activeTool === 'vocab' ? vocabList
+            : activeTool === 'grammar' ? grammarTopic
+            : '';
+
+        const targetLang = language === 'en' ? 'en' as const : 'zh' as const;
+
+        const draft = lessonPlanService.createDraft({
+            teacherId: user.id,
+            title: activeTool === 'grammar' ? `Grammar: ${grammarTopic}` : 'New Lesson',
+            targetLanguage: targetLang,
+            targetLevel,
+            targetFramework,
+            sourceType,
+            sourceData,
+        });
+
+        // Transition to AI generating
+        lessonPlanService.transition(draft.id, 'ai-generating');
+
+        // Generate content
+        const result = await aiService.generateLessonContent({
+            sourceType,
+            sourceData,
+            targetLanguage: targetLang,
+            targetLevel,
+            targetFramework,
+        });
+
+        // Update plan with generated content
+        const updated = lessonPlanService.getById(draft.id)!;
+        updated.title = result.title;
+        updated.textContent = result.textContent;
+        updated.vocabItems = result.vocabItems;
+        updated.updatedAt = Date.now();
+        lessonPlanService.save(updated);
+
+        // Transition to pending review
+        const reviewReady = lessonPlanService.transition(draft.id, 'pending-review');
+
+        setActivePlan(reviewReady);
+        setShowReview(true);
+        refreshPlans();
+    };
+
+    const handleAssignPlan = (plan: LessonPlan) => {
+        if (selectedStudentIds.length === 0) {
+            alert(t({ en: 'Please select at least one student first.', zh: '請先選擇至少一位學生。' }));
+            setIsRosterModalOpen(true);
+            return;
+        }
+
+        try {
+            const assigned = lessonPlanService.assign(plan.id, selectedStudentIds);
+            alert(t({ en: `Lesson plan assigned to ${selectedStudentIds.length} students!`, zh: `課程計畫已分配給 ${selectedStudentIds.length} 位學生！` }));
+            setActivePlan(assigned);
+            setShowReview(false);
+            refreshPlans();
+        } catch (err) {
+            alert(String(err));
+        }
     };
 
     return (
@@ -413,7 +517,116 @@ export const TeacherDashboard: React.FC = () => {
                     </div>
                 )}
 
-                {/* Removed Assignment Trigger */}
+                {/* Target Level Selector */}
+                <div style={{ marginTop: '2rem', padding: '1.5rem', background: 'var(--color-bg-card)', borderRadius: '12px', border: '1px solid var(--color-border-scratch)' }}>
+                    <h4 style={{ marginBottom: '1rem', fontWeight: '400' }}>{t({ en: 'Target Level', zh: '目標等級' })}</h4>
+                    <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                        <select
+                            value={targetFramework}
+                            onChange={e => setTargetFramework(e.target.value as Framework)}
+                            style={{ padding: '0.5rem', borderRadius: '6px', border: '1px solid var(--color-text-muted)', background: 'var(--color-bg-base)', color: 'var(--color-text-primary)' }}
+                        >
+                            <option value="GEPT">GEPT (English)</option>
+                            <option value="TOCFL">TOCFL (Chinese)</option>
+                            <option value="GRADE">Grade School</option>
+                        </select>
+                        <select
+                            value={targetLevel}
+                            onChange={e => setTargetLevel(Number(e.target.value) as LevelNumber)}
+                            style={{ padding: '0.5rem', borderRadius: '6px', border: '1px solid var(--color-text-muted)', background: 'var(--color-bg-base)', color: 'var(--color-text-primary)' }}
+                        >
+                            {getLevelOptions().map(opt => (
+                                <option key={opt.value} value={opt.value}>{opt.label}</option>
+                            ))}
+                        </select>
+                        <button
+                            className="btn-primary"
+                            onClick={handleCreateDraft}
+                            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.95rem' }}
+                        >
+                            <LucideClipboardCheck size={18} />
+                            {t({ en: 'Create & Review Lesson Plan', zh: '建立並審查課程計畫' })}
+                        </button>
+                    </div>
+                </div>
+
+                {/* Lesson Plans List */}
+                {lessonPlans.length > 0 && (
+                    <div style={{ marginTop: '2rem' }}>
+                        <h4 style={{ marginBottom: '1rem', fontWeight: '400', color: 'var(--color-text-secondary)' }}>
+                            {t({ en: 'Lesson Plans', zh: '課程計畫' })} ({lessonPlans.length})
+                        </h4>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                            {lessonPlans.map(plan => (
+                                <div
+                                    key={plan.id}
+                                    onClick={() => { setActivePlan(plan); setShowReview(true); }}
+                                    style={{
+                                        padding: '0.75rem 1rem',
+                                        borderRadius: '8px',
+                                        border: '1px solid var(--color-border-scratch)',
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        background: activePlan?.id === plan.id ? 'rgba(0,119,237,0.05)' : 'transparent',
+                                    }}
+                                >
+                                    <div>
+                                        <strong>{plan.title}</strong>
+                                        <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', marginLeft: '0.5rem' }}>
+                                            L{plan.targetLevel}
+                                        </span>
+                                    </div>
+                                    <span style={{
+                                        fontSize: '0.75rem',
+                                        padding: '2px 8px',
+                                        borderRadius: '10px',
+                                        background: plan.status === 'finalized' ? '#27ae6020' : plan.status === 'assigned' ? '#3498db20' : '#f39c1220',
+                                        color: plan.status === 'finalized' ? '#27ae60' : plan.status === 'assigned' ? '#3498db' : '#f39c12',
+                                    }}>
+                                        {plan.status}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Review Modal */}
+                {showReview && activePlan && (
+                    <div style={{
+                        position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                        background: 'rgba(0,0,0,0.6)', zIndex: 2500,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem',
+                    }} onClick={() => setShowReview(false)}>
+                        <div style={{
+                            background: 'var(--color-bg-base)', width: '100%', maxWidth: '700px',
+                            borderRadius: '16px', maxHeight: '90vh', overflowY: 'auto',
+                            boxShadow: '0 20px 50px rgba(0,0,0,0.3)',
+                        }} onClick={e => e.stopPropagation()}>
+                            <LessonPlanReview
+                                plan={activePlan}
+                                onPlanUpdate={(updated) => { setActivePlan(updated); refreshPlans(); }}
+                                onFinalize={(finalized) => {
+                                    setActivePlan(finalized);
+                                    refreshPlans();
+                                }}
+                            />
+                            {activePlan.status === 'finalized' && (
+                                <div style={{ padding: '0 1.5rem 1.5rem' }}>
+                                    <button
+                                        className="btn-primary"
+                                        onClick={() => handleAssignPlan(activePlan)}
+                                        style={{ width: '100%', background: 'var(--color-accent-green)', fontSize: '1rem' }}
+                                    >
+                                        {t({ en: `Assign to ${selectedStudentIds.length} Students`, zh: `分配給 ${selectedStudentIds.length} 位學生` })}
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
 
                 {/* Roster Modal */}
                 {isRosterModalOpen && (

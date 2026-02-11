@@ -4,9 +4,10 @@ export interface ContentItem {
     id: string;
     authorId: string;
     assignedStudentId?: string; // If undefined, maybe public or draft
-    type: 'story' | 'lesson';
+    type: 'story' | 'lesson' | 'video-lesson';
     title: string;
     payload: any; // The story text, vocab list, etc.
+    lessonPlanId?: string; // Link back to source lesson plan
     createdAt: number;
 }
 
@@ -46,5 +47,20 @@ export const contentService = {
     getContentByTeacher: (teacherId: string): ContentItem[] => {
         const all = contentService.getAllContent();
         return all.filter(c => c.authorId === teacherId);
-    }
+    },
+
+    createFromLessonPlan: (authorId: string, studentId: string, title: string, payload: any, lessonPlanId: string, hasVideo: boolean): ContentItem => {
+        const newItem: ContentItem = {
+            id: Date.now().toString(),
+            authorId,
+            assignedStudentId: studentId,
+            type: hasVideo ? 'video-lesson' : 'lesson',
+            title,
+            payload,
+            lessonPlanId,
+            createdAt: Date.now(),
+        };
+        contentService.saveContent(newItem);
+        return newItem;
+    },
 };

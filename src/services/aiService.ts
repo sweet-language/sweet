@@ -1,3 +1,5 @@
+import type { VocabItem } from '../models/lessonPlan';
+import type { LevelNumber, Framework } from '../models/leveling';
 
 export interface GeneratedStory {
     title: string;
@@ -5,6 +7,12 @@ export interface GeneratedStory {
     imageUrl?: string;
     level?: string;
     vocab?: string[];
+}
+
+export interface GeneratedLessonContent {
+    title: string;
+    textContent: string;
+    vocabItems: VocabItem[];
 }
 
 export interface ChatMessage {
@@ -176,5 +184,62 @@ export const aiService = {
                 imageUrl: "/images/story-mock-1.jpg"
             });
         });
-    }
+    },
+
+    generateLessonContent: async (params: {
+        sourceType: 'image' | 'vocab-list' | 'grammar-topic' | 'manual';
+        sourceData: string;
+        targetLanguage: 'en' | 'zh';
+        targetLevel: LevelNumber;
+        targetFramework: Framework;
+    }): Promise<GeneratedLessonContent> => {
+        const { sourceType, sourceData, targetLanguage, targetLevel, targetFramework } = params;
+        const lang = targetLanguage === 'zh' ? 'zh-TW' : 'en';
+
+        // Try real AI generation if image source
+        if (sourceType === 'image' && GEMINI_API_KEY) {
+            try {
+                const story = await aiService.generateStoryFromImage(sourceData, lang);
+                return {
+                    title: story.title,
+                    textContent: story.content,
+                    vocabItems: (story.vocab || []).map((word, i) => ({
+                        id: `v-${Date.now()}-${i}`,
+                        word,
+                        definition: '',
+                        partOfSpeech: 'noun',
+                        exampleSentence: '',
+                        level: targetLevel,
+                    })),
+                };
+            } catch (err) {
+                console.error('AI lesson generation failed:', err);
+            }
+        }
+
+        // Mock fallback for all source types
+        console.log(`Generating lesson: ${sourceType} / ${targetFramework} L${targetLevel}`);
+        const words = sourceType === 'vocab-list'
+            ? sourceData.split(',').map(w => w.trim()).filter(Boolean)
+            : ['word1', 'word2', 'word3'];
+
+        const mockContent = targetLanguage === 'zh'
+            ? `這是一個練習課程。今天我們要學習這些詞彙：${words.join('、')}。`
+            : `This is a practice lesson. Today we will learn these words: ${words.join(', ')}.`;
+
+        return {
+            title: sourceType === 'grammar-topic'
+                ? `Grammar: ${sourceData}`
+                : targetLanguage === 'zh' ? '詞彙課程' : 'Vocabulary Lesson',
+            textContent: mockContent,
+            vocabItems: words.map((word, i) => ({
+                id: `v-${Date.now()}-${i}`,
+                word,
+                definition: '',
+                partOfSpeech: 'noun',
+                exampleSentence: '',
+                level: targetLevel,
+            })),
+        };
+    },
 };

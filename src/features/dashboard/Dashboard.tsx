@@ -4,6 +4,7 @@ import { useAuth } from '../auth/AuthContext';
 import { contentService, type ContentItem } from '../../services/contentService';
 import { FlashcardDeck } from '../study-tools/FlashcardDeck';
 import { LivingBook } from '../study-tools/LivingBook';
+import { VideoLessonPlayer } from './components/VideoLessonPlayer';
 import { LucideBook, LucideBrain, LucideLibrary } from 'lucide-react';
 
 export const Dashboard: React.FC = () => {
@@ -108,6 +109,16 @@ export const Dashboard: React.FC = () => {
                             <div style={{ animation: 'fadeIn 0.5s' }}>
                                 <h1 style={{ fontSize: '3rem', marginBottom: '2rem', lineHeight: '1.2' }}>{selectedStory.title}</h1>
 
+                                {/* Video Lesson Player */}
+                                {selectedStory.type === 'video-lesson' && selectedStory.payload.videoContent && (
+                                    <div style={{ marginBottom: '2rem' }}>
+                                        <VideoLessonPlayer
+                                            videoContent={selectedStory.payload.videoContent}
+                                            vocabItems={selectedStory.payload.vocabItems || []}
+                                        />
+                                    </div>
+                                )}
+
                                 {/* If it has content (text) */}
                                 {selectedStory.payload.content && (
                                     <div style={{ fontSize: '1.4rem', lineHeight: '1.8', marginBottom: '3rem', whiteSpace: 'pre-wrap' }}>
@@ -115,8 +126,32 @@ export const Dashboard: React.FC = () => {
                                     </div>
                                 )}
 
-                                {/* If it has vocab */}
-                                {selectedStory.payload.vocab && (
+                                {/* Enriched vocab items (from lesson plans) */}
+                                {selectedStory.payload.vocabItems && selectedStory.payload.vocabItems.length > 0 ? (
+                                    <div style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid var(--color-text-muted)' }}>
+                                        <h4 style={{ color: 'var(--color-text-secondary)', marginBottom: '1rem' }}>
+                                            {t({ en: 'VOCABULARY', zh: '詞彙' })}
+                                        </h4>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                                            {selectedStory.payload.vocabItems.map((v: any) => (
+                                                <div key={v.id} style={{
+                                                    padding: '0.6rem 1rem',
+                                                    borderRadius: '8px',
+                                                    background: 'var(--color-bg-card)',
+                                                    border: '1px solid var(--color-border-scratch)',
+                                                }}>
+                                                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', marginBottom: '0.2rem' }}>
+                                                        <strong style={{ fontSize: '1.1rem' }}>{v.word}</strong>
+                                                        {v.pinyin && <span style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem' }}>{v.pinyin}</span>}
+                                                        {v.partOfSpeech && <span style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', fontStyle: 'italic' }}>{v.partOfSpeech}</span>}
+                                                    </div>
+                                                    {v.definition && <div style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)' }}>{v.definition}</div>}
+                                                    {v.exampleSentence && <div style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', fontStyle: 'italic', marginTop: '0.2rem' }}>"{v.exampleSentence}"</div>}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ) : selectedStory.payload.vocab && (
                                     <div style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid var(--color-text-muted)' }}>
                                         <h4 style={{ color: 'var(--color-text-secondary)', marginBottom: '1rem' }}>
                                             {t({ en: 'VOCABULARY', zh: '單字' })}

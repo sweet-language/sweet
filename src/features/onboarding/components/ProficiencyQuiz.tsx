@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../../language/LanguageContext';
+import { buildProficiency } from '../../../models/leveling';
+import type { LevelNumber, UserProficiency } from '../../../models/leveling';
 
 interface ProficiencyQuizProps {
     onChange: (data: { level: string }) => void;
     age?: number;
     targetLanguage?: 'en' | 'zh';
     onFinish?: (level: number, label: string) => void;
+    onProficiency?: (proficiency: UserProficiency) => void;
 }
 
 // Data Structure
@@ -136,7 +139,7 @@ function shuffle<T>(array: T[]): T[] {
     return newArr;
 }
 
-export const ProficiencyQuiz: React.FC<ProficiencyQuizProps> = ({ onChange, age, targetLanguage, onFinish }) => {
+export const ProficiencyQuiz: React.FC<ProficiencyQuizProps> = ({ onChange, age, targetLanguage, onFinish, onProficiency }) => {
     const { t, language } = useLanguage();
 
     // State
@@ -221,34 +224,14 @@ export const ProficiencyQuiz: React.FC<ProficiencyQuizProps> = ({ onChange, age,
             }
         });
 
-        // Determine Label
-        let levelLabel = '';
-        let levelNum = 1;
+        // Determine target language and category
+        const targetLang = targetLanguage || (language === 'en' ? 'zh' : 'en');
+        const category = isChild ? 'child' as const : 'adult' as const;
+        const levelNum = Math.max(1, Math.min(6, highestDiff)) as LevelNumber;
 
-        if (language !== 'en') {
-            // UI is Chinese (TW/CN) -> Target is English
-            if (isChild) {
-                // English Child -> Gradeschool Levels
-                levelLabel = `Grade ${Math.max(1, highestDiff)}`;
-                levelNum = Math.max(1, highestDiff);
-            } else {
-                // English Adult -> GEPT
-                if (highestDiff >= 6) { levelLabel = 'GEPT Advanced'; levelNum = 6; }
-                else if (highestDiff >= 5) { levelLabel = 'GEPT High-Intermediate'; levelNum = 5; }
-                else if (highestDiff >= 4) { levelLabel = 'GEPT Intermediate'; levelNum = 4; }
-                else if (highestDiff >= 3) { levelLabel = 'GEPT Elementary (High)'; levelNum = 3; }
-                else if (highestDiff >= 2) { levelLabel = 'GEPT Elementary'; levelNum = 2; }
-                else { levelLabel = 'GEPT Basic'; levelNum = 1; }
-            }
-        } else {
-            // UI is English -> Target is Mandarin (TOCFL)
-            if (highestDiff >= 6) { levelLabel = 'TOCFL Band C (Level 6)'; levelNum = 6; }
-            else if (highestDiff >= 5) { levelLabel = 'TOCFL Band C (Level 5)'; levelNum = 5; }
-            else if (highestDiff >= 4) { levelLabel = 'TOCFL Band B (Level 4)'; levelNum = 4; }
-            else if (highestDiff >= 3) { levelLabel = 'TOCFL Band B (Level 3)'; levelNum = 3; }
-            else if (highestDiff >= 2) { levelLabel = 'TOCFL Band A (Level 2)'; levelNum = 2; }
-            else { levelLabel = 'TOCFL Band A (Level 1)'; levelNum = 1; }
-        }
+        // Use the leveling module to build proficiency
+        const profLevel = buildProficiency(targetLang as 'en' | 'zh', category, levelNum);
+        const levelLabel = profLevel.label;
 
         const appSetting = (highestDiff >= 3) ? 'Advanced' : 'Beginner';
 
@@ -256,6 +239,20 @@ export const ProficiencyQuiz: React.FC<ProficiencyQuizProps> = ({ onChange, age,
         setFinished(true);
         onChange({ level: appSetting });
         if (onFinish) onFinish(levelNum, levelLabel);
+
+        // Report structured proficiency if callback provided
+        if (onProficiency) {
+            const userProf: UserProficiency = {
+                assessedAt: Date.now(),
+                assessmentMethod: 'quiz',
+            };
+            if (targetLang === 'en') {
+                userProf.english = profLevel;
+            } else {
+                userProf.chinese = profLevel;
+            }
+            onProficiency(userProf);
+        }
     };
 
     if (activeQuestions.length === 0) return <div>{t({ en: 'Loading...', zh: '載入中...' })}</div>;

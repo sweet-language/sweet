@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import type { UserProficiency } from '../../models/leveling';
 
 export type Role = 'student' | 'teacher';
 
@@ -12,7 +13,8 @@ export interface User {
     // New Fields
     targetLanguage?: 'en' | 'zh'; // Student learning
     teachingLanguage?: 'en' | 'zh'; // Teacher teaching
-    proficiencyLevel?: string; // e.g. "Level 3"
+    proficiencyLevel?: string; // e.g. "Level 3" (backward compat)
+    proficiency?: UserProficiency; // Structured proficiency data
     classId?: string; // Linked Group/Class ID
 
 }
