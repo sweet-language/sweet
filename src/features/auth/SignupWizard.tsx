@@ -88,11 +88,11 @@ export const SignupWizard: React.FC = () => {
                     <h2 className="scratch-text" style={{ fontSize: '2.5rem', color: '#9ECA3B', marginBottom: '2rem', textAlign: 'center' }}>
                         {mode === 'teacher' ? t({ en: 'What do you teach?', zh: '您教什麼？' }) : t({ en: 'What are you studying?', zh: '您想學什麼？' })}
                     </h2>
-                    <div style={{ display: 'flex', gap: '2rem' }}>
-                        <button onClick={() => { setTargetLanguage('zh'); setStep(2); }} style={{ padding: '2rem', borderRadius: '16px', border: 'none', cursor: 'pointer', fontSize: '1.5rem', minWidth: '200px' }}>
+                    <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap', justifyContent: 'center', padding: '0 1rem' }}>
+                        <button onClick={() => { setTargetLanguage('zh'); setStep(2); }} style={{ padding: '2rem', borderRadius: '16px', border: 'none', cursor: 'pointer', fontSize: '1.5rem', minWidth: '160px', flex: '1 1 160px', maxWidth: '250px' }}>
                             {t({ en: 'Chinese', zh: '中文' })}
                         </button>
-                        <button onClick={() => { setTargetLanguage('en'); setStep(2); }} style={{ padding: '2rem', borderRadius: '16px', border: 'none', cursor: 'pointer', fontSize: '1.5rem', minWidth: '200px' }}>
+                        <button onClick={() => { setTargetLanguage('en'); setStep(2); }} style={{ padding: '2rem', borderRadius: '16px', border: 'none', cursor: 'pointer', fontSize: '1.5rem', minWidth: '160px', flex: '1 1 160px', maxWidth: '250px' }}>
                             {t({ en: 'English', zh: '英文' })}
                         </button>
                     </div>

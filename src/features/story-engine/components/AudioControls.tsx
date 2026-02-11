@@ -40,7 +40,7 @@ export const AudioControls: React.FC<AudioControlsProps> = ({ textToRead = '' })
     }, [transcript]);
 
     return (
-        <div style={{
+        <div className="audio-controls-bar" style={{
             position: 'fixed',
             bottom: '2rem',
             left: '50%',
@@ -53,7 +53,7 @@ export const AudioControls: React.FC<AudioControlsProps> = ({ textToRead = '' })
             borderRadius: '50px',
             border: '1px solid var(--color-text-muted)',
             boxShadow: '0 0 20px rgba(0,0,0,0.8)',
-            zIndex: 100 // Ensure above other elements
+            zIndex: 100
         }}>
             <button
                 onClick={handlePlay}

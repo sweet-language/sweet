@@ -42,3 +42,7 @@ ui-debug.log
 
 # Environment variables
 .env
+
+# Junk / accidental files
+nul
+*.tar.gz

@@ -245,7 +245,7 @@ export const TeacherDashboard: React.FC = () => {
             </header>
 
             {/* Tool Selector */}
-            <div style={{ display: 'flex', gap: '2rem', justifyContent: 'center', marginBottom: '4rem' }}>
+            <div className="teacher-tools" style={{ display: 'flex', gap: '2rem', justifyContent: 'center', marginBottom: '4rem' }}>
                 {[
                     { id: 'photo', icon: LucideImage, label: t({ en: 'Photo -> Content', zh: '照片 -> 內容' }) },
                     { id: 'vocab', icon: LucideWholeWord, label: t({ en: 'Vocab List', zh: '單詞列表' }) },
@@ -572,7 +572,7 @@ export const TeacherDashboard: React.FC = () => {
                 )}
 
                 {/* Floating Action Bar */}
-                <div style={{
+                <div className="floating-action-bar" style={{
                     position: 'fixed', bottom: '2rem', left: '50%', transform: 'translateX(-50%)',
                     background: 'var(--color-bg-base)', padding: '1rem 2rem', borderRadius: '50px',
                     boxShadow: '0 8px 32px rgba(0,0,0,0.2)', border: '1px solid var(--color-border-scratch)',

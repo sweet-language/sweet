@@ -74,19 +74,23 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onClose }) => {
             setMessages(prev => [...prev, aiMsg]);
 
             // Text-to-Speech
+            window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(responseText);
-            utterance.lang = language === 'en' ? 'en-US' : 'zh-TW';
+            utterance.lang = language === 'en' ? 'en-US' : (language === 'zh-CN' ? 'zh-CN' : 'zh-TW');
 
-            // Apply best voice
-            const bestVoice = getBestVoice(language);
+            // Re-fetch voices in case they weren't loaded yet
+            const freshVoices = window.speechSynthesis.getVoices();
+            const bestVoice = freshVoices.length > 0 ? getBestVoice(language) : null;
             if (bestVoice) {
                 utterance.voice = bestVoice;
-                // Slight pitch/rate tweaks for character
                 utterance.pitch = 1.1;
                 utterance.rate = 1.0;
             }
 
-            window.speechSynthesis.speak(utterance);
+            // Small delay to ensure cancel() fully clears
+            setTimeout(() => {
+                window.speechSynthesis.speak(utterance);
+            }, 50);
 
 
         } catch (error) {
@@ -132,8 +136,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onClose }) => {
 
     return (
         <div className="scratch-card" style={{
-            width: '350px',
-            height: '500px',
+            width: 'min(350px, calc(100vw - 2rem))',
+            height: 'min(500px, 70vh)',
             display: 'flex',
             flexDirection: 'column',
             position: 'absolute',

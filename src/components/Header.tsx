@@ -35,7 +35,7 @@ export const Header: React.FC<HeaderProps> = ({ showLogout = true }) => {
             transition: 'all 0.5s ease'
         }}>
             <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
-                <svg width="140" height="60" viewBox="0 0 500 200" style={{ overflow: 'visible' }}>
+                <svg width="140" height="60" viewBox="0 0 500 200" style={{ overflow: 'visible', maxWidth: '120px', height: 'auto' }}>
                     <defs>
                         <path id="curveSweetHeader" d="M 50,120 Q 250,20 450,120" />
                     </defs>
@@ -66,10 +66,10 @@ export const Header: React.FC<HeaderProps> = ({ showLogout = true }) => {
                 </svg>
             </Link>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                {/* Greeting */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
+                {/* Greeting - hidden on small screens via CSS */}
                 {user && (
-                    <span style={{ marginRight: '1rem', color: 'var(--color-text-secondary)', fontSize: '0.9rem' }}>
+                    <span className="header-greeting" style={{ marginRight: '0.5rem', color: 'var(--color-text-secondary)', fontSize: '0.9rem' }}>
                         {t({ en: 'Hello, ', zh: '你好，' })}
                         <strong style={{ color: '#9ECA3B' }}>
                             {user.id}

@@ -143,8 +143,8 @@ export const LoginPage: React.FC = () => {
                     </div>
 
                     {/* Logo (Inverted Colors for Dark Mode) */}
-                    <div style={{ marginBottom: '2rem' }}>
-                        <svg width="500" height="200" viewBox="0 0 500 200" style={{ overflow: 'visible' }}>
+                    <div className="login-hero" style={{ marginBottom: '2rem', width: '100%', maxWidth: '500px', padding: '0 1rem' }}>
+                        <svg width="100%" height="auto" viewBox="0 0 500 200" style={{ overflow: 'visible', maxWidth: '500px' }}>
                             <defs>
                                 <path id="curveSweet" d="M 50,120 Q 250,20 450,120" />
                                 <path id="curveTagline" d="M 70,130 Q 250,55 430,130" />
@@ -178,15 +178,15 @@ export const LoginPage: React.FC = () => {
                     </div>
 
                     {/* Hero Puzzle Image */}
-                    <div style={{ marginBottom: '2rem' }}>
+                    <div style={{ marginBottom: '2rem', width: '100%', display: 'flex', justifyContent: 'center', padding: '0 1rem' }}>
                         <img
                             src={puzzlePeopleImg}
                             alt="Join us"
                             style={{
-                                maxWidth: '500px', // Increased size
-                                width: '100%',
+                                maxWidth: '400px',
+                                width: '80%',
                                 objectFit: 'contain',
-                                filter: 'invert(1)', // Invert for dark mode
+                                filter: 'invert(1)',
                                 mixBlendMode: 'screen'
                             }}
                         />
@@ -263,8 +263,8 @@ export const LoginPage: React.FC = () => {
 
 
                     {/* Role Selection Title */}
-                    <div style={{ marginBottom: '-1rem', zIndex: 1, textAlign: 'center' }}>
-                        <svg width="500" height="120" viewBox="0 0 500 120" style={{ overflow: 'visible' }}>
+                    <div style={{ marginBottom: '-1rem', zIndex: 1, textAlign: 'center', width: '100%', maxWidth: '500px', padding: '0 1rem' }}>
+                        <svg width="100%" height="auto" viewBox="0 0 500 120" style={{ overflow: 'visible', maxWidth: '500px' }}>
                             {/* Gentle arch curve */}
                             <path id="curveRole" d="M 50,100 Q 250,20 450,100" fill="none" stroke="none" />
                             <text>

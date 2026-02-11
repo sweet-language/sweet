@@ -33,7 +33,7 @@ export const Dashboard: React.FC = () => {
     return (
         <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '2rem 1rem' }}>
             {/* Header / Nav */}
-            <div style={{ display: 'flex', gap: '3rem', justifyContent: 'center', marginBottom: '4rem', borderBottom: '1px solid var(--color-text-muted)', paddingBottom: '1rem' }}>
+            <div className="tab-nav" style={{ display: 'flex', gap: '3rem', justifyContent: 'center', marginBottom: '4rem', borderBottom: '1px solid var(--color-text-muted)', paddingBottom: '1rem' }}>
                 {[
                     { id: 'stories', label: t({ en: 'MY STORIES', zh: '我的故事' }), icon: LucideBook },
                     { id: 'flashcards', label: t({ en: 'FLASHCARDS', zh: '單字卡' }), icon: LucideBrain },
@@ -63,7 +63,7 @@ export const Dashboard: React.FC = () => {
 
             {/* Content Area */}
             {activeTab === 'stories' && (
-                <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: '4rem' }}>
+                <div className="dashboard-stories-grid" style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: '4rem' }}>
 
                     {/* Story List (Sidebar) */}
                     <div>
@@ -156,11 +156,11 @@ export const Dashboard: React.FC = () => {
                 <LivingBook />
             )}
 
-            {/* My Teacher Widget (Lower Right) */}
-            <div style={{
+            {/* My Teacher Widget (Lower Left) */}
+            <div className="teacher-widget" style={{
                 position: 'fixed',
-                bottom: '2rem',
-                left: '2rem',
+                bottom: '1rem',
+                left: '1rem',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '1rem',

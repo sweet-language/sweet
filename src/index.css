@@ -97,3 +97,135 @@ select:focus {
   outline: none;
   border-bottom-color: var(--color-text-primary);
 }
+
+/* ========== MOBILE RESPONSIVE ========== */
+
+/* Tablet and below */
+@media (max-width: 768px) {
+  /* Header: shrink logo, stack controls */
+  header[style] svg {
+    max-width: 100px;
+    height: auto;
+  }
+
+  /* Dashboard stories grid: stack sidebar and content */
+  .dashboard-stories-grid {
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+  }
+
+  /* Teacher tool selector: wrap to 2 columns */
+  .teacher-tools {
+    flex-wrap: wrap !important;
+    gap: 1rem !important;
+  }
+
+  /* Chat interface: full width on mobile */
+  .mentor-overlay-container .scratch-card {
+    width: calc(100vw - 2rem) !important;
+    max-width: 350px !important;
+    right: -1rem !important;
+    bottom: 70px !important;
+  }
+
+  /* Audio controls: smaller on mobile */
+  .audio-controls-bar {
+    padding: 0.6rem 1.2rem !important;
+    gap: 0.5rem !important;
+  }
+
+  .audio-controls-bar button {
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+  /* Generic spacing reductions */
+  .app-container {
+    padding: 1rem !important;
+  }
+}
+
+/* Hide header greeting on tablet */
+@media (max-width: 768px) {
+  .header-greeting {
+    display: none !important;
+  }
+}
+
+/* Phone screens */
+@media (max-width: 480px) {
+  body {
+    font-size: 15px;
+  }
+
+  h1 {
+    font-size: 2rem !important;
+  }
+
+  h2 {
+    font-size: 1.5rem !important;
+  }
+
+  /* Login hero SVG: scale down */
+  .login-hero svg {
+    max-width: 280px;
+    height: auto;
+  }
+
+  /* Teacher dashboard: single column tools */
+  .teacher-tools {
+    justify-content: center !important;
+  }
+
+  .teacher-tools button {
+    min-width: 120px;
+  }
+
+  /* Tab navigation: scrollable */
+  .tab-nav {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 1.5rem !important;
+  }
+
+  .tab-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Fixed bottom bars: full width */
+  .floating-action-bar {
+    left: 1rem !important;
+    right: 1rem !important;
+    transform: none !important;
+    border-radius: 16px !important;
+  }
+
+  /* Modal: full screen on mobile */
+  .roster-modal {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    border-radius: 0 !important;
+  }
+}
+
+/* Prevent horizontal scroll */
+html, body {
+  overflow-x: hidden;
+}
+
+/* Improve touch targets */
+@media (pointer: coarse) {
+  button, a, input, select, textarea {
+    min-height: 44px;
+  }
+}
+
+/* Safe area insets for notched phones */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .floating-action-bar,
+  .audio-controls-bar {
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+  }
+}
